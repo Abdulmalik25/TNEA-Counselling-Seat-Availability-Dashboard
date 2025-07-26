@@ -91,7 +91,14 @@ st.subheader(f"🎯 Total Available Seats: {int(filtered_df[category_columns].su
 
 # 📊 Bar Chart - District vs Category
 st.markdown("### 📊 Total Seats by District & Category")
-district_chart = filtered_df.groupby(['District', 'Category'])['Available Seats'].sum().reset_index()
+
+# Sum category columns by district
+district_chart = (
+    filtered_df.groupby('District')[category_columns]
+    .sum()
+    .reset_index()
+    .melt(id_vars='District', var_name='Category', value_name='Available Seats')
+)
 
 fig1 = px.bar(
     district_chart,
