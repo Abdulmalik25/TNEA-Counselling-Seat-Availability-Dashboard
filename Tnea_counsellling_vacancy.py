@@ -57,18 +57,27 @@ st.sidebar.header("🔍 Filters")
 # 1. District Filter
 selected_districts = st.sidebar.multiselect("Select District", sorted(df['District'].unique()))
 
-# 2. College Filter — dynamically show only colleges from selected districts
+# 2. College Filter (based on selected district)
 if selected_districts:
-    filtered_colleges = df[df['District'].isin(selected_districts)]['College Name'].unique()
+    filtered_df_district = df[df['District'].isin(selected_districts)]
+    college_options = sorted(filtered_df_district['College Name'].unique())
 else:
-    filtered_colleges = df['College Name'].unique()
+    filtered_df_district = df
+    college_options = sorted(df['College Name'].unique())
 
-selected_colleges = st.sidebar.multiselect("Select College Name", sorted(filtered_colleges))
+selected_colleges = st.sidebar.multiselect("Select College Name", college_options)
 
-# 3. Branch Filter
-selected_branches = st.sidebar.multiselect("Select Branch Name", sorted(df['Branch Name'].unique()))
+# 3. Branch Filter (based on selected district + college)
+if selected_colleges:
+    filtered_df_college = filtered_df_district[filtered_df_district['College Name'].isin(selected_colleges)]
+    branch_options = sorted(filtered_df_college['Branch Name'].unique())
+else:
+    filtered_df_college = filtered_df_district
+    branch_options = sorted(filtered_df_district['Branch Name'].unique())
 
-# 4. Reservation Category Filter (based on column names)
+selected_branches = st.sidebar.multiselect("Select Branch Name", branch_options)
+
+# 4. Reservation Category Filter (no dependency)
 selected_categories = st.sidebar.multiselect("Select Reservation Category", sorted(category_columns))
 
 # ✅ Apply Filters in sequence
