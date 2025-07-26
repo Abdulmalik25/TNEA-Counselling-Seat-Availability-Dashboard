@@ -119,7 +119,7 @@ st.dataframe(filtered_df, use_container_width=True)
 st.markdown("### 📥 Download Filtered Data")
 col_csv, col_excel = st.columns(2)
 with col_csv:
-    st.download_button("⬇️ Download CSV", filtered_df.to_csv(index=False), "filtered_tnea.csv", "text/csv")
+    st.download_button("⬇️ Download CSV", filtered_df.to_csv(index=False), "vacancy_list_tnea.csv", "text/csv")
 
 # Footer
 st.markdown("---")
