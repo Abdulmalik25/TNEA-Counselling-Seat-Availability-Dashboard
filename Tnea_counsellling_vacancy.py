@@ -58,14 +58,27 @@ st.markdown(f"🗂️ **Current Mode:** `{reservation_type}`")
 
 # Sidebar Filters
 st.sidebar.header("🔍 Filters")
-with st.sidebar:
-    selected_districts = st.multiselect("Select District", sorted(df['District'].unique()))
-    selected_colleges = st.multiselect("Select College Name", sorted(df['College Name'].unique()))
-    selected_branches = st.multiselect("Select Branch Name", sorted(df['Branch Name'].unique()))
-    selected_categories = st.multiselect("Select Reservation Category", sorted(df['Category'].unique()))
 
-# Apply Filters
+# 1. District Filter
+selected_districts = st.sidebar.multiselect("Select District", sorted(df['District'].unique()))
+
+# 2. College Filter — dynamically show only colleges from selected districts
+if selected_districts:
+    filtered_colleges = df[df['District'].isin(selected_districts)]['College Name'].unique()
+else:
+    filtered_colleges = df['College Name'].unique()
+
+selected_colleges = st.sidebar.multiselect("Select College Name", sorted(filtered_colleges))
+
+# 3. Branch Filter
+selected_branches = st.sidebar.multiselect("Select Branch Name", sorted(df['Branch Name'].unique()))
+
+# 4. Reservation Category Filter (based on column names)
+selected_categories = st.sidebar.multiselect("Select Reservation Category", sorted(category_columns))
+
+# ✅ Apply Filters in sequence
 filtered_df = df.copy()
+
 if selected_districts:
     filtered_df = filtered_df[filtered_df['District'].isin(selected_districts)]
 if selected_colleges:
@@ -73,7 +86,10 @@ if selected_colleges:
 if selected_branches:
     filtered_df = filtered_df[filtered_df['Branch Name'].isin(selected_branches)]
 if selected_categories:
-    filtered_df = filtered_df[filtered_df['Category'].isin(selected_categories)]
+    mask = pd.Series(False, index=filtered_df.index)
+    for cat in selected_categories:
+        mask |= (filtered_df[cat] > 0)
+    filtered_df = filtered_df[mask]
 
 # 🎯 Total Available Seats
 st.subheader(f"🎯 Total Available Seats: {int(filtered_df['Available Seats'].sum())}")
