@@ -106,39 +106,52 @@ st.subheader(f"🎯 Total Available Seats: {int(total_seats)}")
 # 📊 Bar Chart - District vs Category
 st.markdown("### 📊 Total Seats by District & Category")
 
-# Sum category columns by district
-district_chart = (
-    filtered_df.groupby('District')[category_columns]
-    .sum()
-    .reset_index()
-    .melt(id_vars='District', var_name='Category', value_name='Available Seats')
-)
+# Bar chart data prep
+if selected_categories:
+    bar_data = (
+        filtered_df.groupby('District')[selected_categories]
+        .sum()
+        .reset_index()
+    )
+    bar_data = bar_data.melt(id_vars='District', var_name='Category', value_name='Available Seats')
+else:
+    bar_data = (
+        filtered_df.groupby('District')[category_columns]
+        .sum()
+        .reset_index()
+    )
+    bar_data = bar_data.melt(id_vars='District', var_name='Category', value_name='Available Seats')
 
 fig1 = px.bar(
-    district_chart,
+    bar_data,
     x='District',
     y='Available Seats',
     color='Category',
-    title="Seats by District & Category",
-    text='Available Seats'
+    text='Available Seats',
+    title="Seats by District & Category"
 )
-
-fig1.update_traces(
-    textposition='inside',
-    textfont_size=10
-)
-
+fig1.update_traces(textposition='inside', textfont_size=10)
 st.plotly_chart(fig1, use_container_width=True)
 
 # Pie Chart
 st.markdown("### 🥧 Category-wise Seat Proportion")
 
-category_pie = (
-    filtered_df[category_columns]
-    .sum()
-    .reset_index()
-    .rename(columns={0: 'Available Seats', 'index': 'Category'})
-)
+if selected_categories:
+    category_pie = (
+        filtered_df[selected_categories]
+        .sum()
+        .reset_index()
+        .rename(columns={'index': 'Category', 0: 'Available Seats'})
+    )
+else:
+    category_pie = (
+        filtered_df[category_columns]
+        .sum()
+        .reset_index()
+        .rename(columns={'index': 'Category', 0: 'Available Seats'})
+    )
+
+category_pie.columns = ['Category', 'Available Seats']
 
 fig2 = px.pie(
     category_pie,
@@ -146,7 +159,6 @@ fig2 = px.pie(
     values='Available Seats',
     title="Category Share"
 )
-
 st.plotly_chart(fig2, use_container_width=True)
 
 # 📋 Filtered Table
