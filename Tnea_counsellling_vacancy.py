@@ -17,21 +17,16 @@ general_df = pd.read_csv("Cleaned_General_reservation.csv")
 seven_df = pd.read_csv("cleaned_7.5_Reservation.csv")
 
 # Melt category columns into long format
+# Category columns used for filtering and totals
 category_columns = ['OC', 'BC', 'BCM', 'MBC', 'SC', 'SCA', 'ST']
 
+# Only renaming columns to standardize (no melting)
 def preprocess(df):
-    df = df.rename(columns={
+    return df.rename(columns={
         'COLLEGE NAME': 'College Name',
         'BRANCH NAME': 'Branch Name',
         'District': 'District'
     })
-    melted = df.melt(
-        id_vars=['College Name', 'Branch Name', 'District', 'Total_Seats'],
-        value_vars=category_columns,
-        var_name='Category',
-        value_name='Available Seats'
-    )
-    return melted
 
 general_df = preprocess(general_df)
 seven_df = preprocess(seven_df)
