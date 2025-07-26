@@ -118,8 +118,21 @@ st.plotly_chart(fig1, use_container_width=True)
 
 # Pie Chart
 st.markdown("### 🥧 Category-wise Seat Proportion")
-category_pie = filtered_df.groupby('Category')['Available Seats'].sum().reset_index()
-fig2 = px.pie(category_pie, names='Category', values='Available Seats', title="Category Share")
+
+category_pie = (
+    filtered_df[category_columns]
+    .sum()
+    .reset_index()
+    .rename(columns={0: 'Available Seats', 'index': 'Category'})
+)
+
+fig2 = px.pie(
+    category_pie,
+    names='Category',
+    values='Available Seats',
+    title="Category Share"
+)
+
 st.plotly_chart(fig2, use_container_width=True)
 
 # 📋 Filtered Table
