@@ -87,7 +87,7 @@ if selected_categories:
     filtered_df = filtered_df[mask]
 
 # 🎯 Total Available Seats
-st.subheader(f"🎯 Total Available Seats: {int(filtered_df['Available Seats'].sum())}")
+st.subheader(f"🎯 Total Available Seats: {int(filtered_df[category_columns].sum().sum())}")
 
 # 📊 Bar Chart - District vs Category
 st.markdown("### 📊 Total Seats by District & Category")
